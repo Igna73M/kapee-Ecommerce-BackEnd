@@ -1,0 +1,29 @@
+{
+  "name": "e-commerce-backend",
+  "version": "1.0.0",
+  "description": "E-commerce-BackEnd",
+  "main": "server.ts",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "build": "tsc",
+    "serve": "node dist/server.ts",
+    "dev": "nodemon src/server.ts",
+    "seed": "npx ts-node src/seed.ts"
+  },
+  "author": "Mugabe Ignace",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.3.1",
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "mongoose": "^8.18.1",
+    "nodemon": "^3.1.10",
+    "ts-dotenv": "^0.9.1"
+  }
+}
