@@ -31,6 +31,9 @@ export const addToCart = async (req: Request, res: Response) => {
         }
         const product = await ProductModel.findById(productId);
         if (!product) return res.status(404).json({ message: 'Product not found' });
+        if (!product.inStock || (typeof product.quantity === 'number' && product.quantity < quantity)) {
+            return res.status(400).json({ message: 'Not enough stock available' });
+        }
 
         let cart = await CartModel.findOne({ userId });
         if (!cart) {
@@ -39,8 +42,11 @@ export const addToCart = async (req: Request, res: Response) => {
         // Check if product already in cart
         const itemIndex = cart.items.findIndex((item: any) => item.product.toString() === productId);
         if (itemIndex > -1) {
-            // Update quantity and price
-            cart.items[itemIndex].quantity += quantity;
+            const newQuantity = cart.items[itemIndex].quantity + quantity;
+            if (typeof product.quantity === 'number' && product.quantity < newQuantity) {
+                return res.status(400).json({ message: 'Not enough stock available' });
+            }
+            cart.items[itemIndex].quantity = newQuantity;
             cart.items[itemIndex].price = product.price * cart.items[itemIndex].quantity;
         } else {
             cart.items.push({
@@ -65,10 +71,13 @@ export const updateCartItem = async (req: Request, res: Response) => {
         }
         const cart = await CartModel.findOne({ userId });
         if (!cart) return res.status(404).json({ message: 'Cart not found' });
-        const itemIndex = cart.items.findIndex((item: any) => item.productId === productId);
+        const itemIndex = cart.items.findIndex((item: any) => item.productId === productId || item.product.toString() === productId);
         if (itemIndex === -1) return res.status(404).json({ message: 'Product not in cart' });
         const product = await ProductModel.findById(productId);
         if (!product) return res.status(404).json({ message: 'Product not found' });
+        if (!product.inStock || (typeof product.quantity === 'number' && product.quantity < quantity)) {
+            return res.status(400).json({ message: 'Not enough stock available' });
+        }
         cart.items[itemIndex].quantity = quantity;
         cart.items[itemIndex].price = product.price * quantity;
         await cart.save();

@@ -1,4 +1,3 @@
-import { Schema, model, Document } from 'mongoose';
 
 export interface Product {
     id: string;
@@ -8,10 +7,11 @@ export interface Product {
     originalPrice?: number;
     discount?: number;
     image: string;
-    category: string;
+    category: Types.ObjectId;
     features?: string[];
     rating?: number;
     inStock?: boolean;
+    quantity?: number;
 }
 
 export interface ProductDocument extends Document {
@@ -21,10 +21,42 @@ export interface ProductDocument extends Document {
     originalPrice?: number;
     discount?: number;
     image: string;
-    category: string;
+    category: Types.ObjectId;
     features?: string[];
     rating?: number;
     inStock?: boolean;
+    quantity?: number;
+}
+
+import mongoose, { Schema, model, Document, Types } from 'mongoose';
+
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    discount?: number;
+    image: string;
+    category: Types.ObjectId;
+    features?: string[];
+    rating?: number;
+    inStock?: boolean;
+    quantity?: number;
+}
+
+export interface ProductDocument extends Document {
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    discount?: number;
+    image: string;
+    category: Types.ObjectId;
+    features?: string[];
+    rating?: number;
+    inStock?: boolean;
+    quantity?: number;
 }
 
 const ProductSchema = new Schema<ProductDocument>({
@@ -34,10 +66,11 @@ const ProductSchema = new Schema<ProductDocument>({
     originalPrice: { type: Number },
     discount: { type: Number },
     image: { type: String, required: true },
-    category: { type: String, required: true },
+    category: { type: Schema.Types.ObjectId, ref: 'BrandCategory', required: true },
     features: [{ type: String }],
     rating: { type: Number },
     inStock: { type: Boolean, default: true },
+    quantity: { type: Number, default: 0 },
 }, { timestamps: true });
 
 export const ProductModel = model<ProductDocument>('Product', ProductSchema);

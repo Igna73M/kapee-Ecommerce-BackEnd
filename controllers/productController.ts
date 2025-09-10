@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { ProductModel } from '../models/product';
+import { BrandCategoryModel } from '../models/brandCategory';
 
 export const getProducts = async (req: Request, res: Response) => {
     try {
@@ -23,7 +24,18 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        const product = new ProductModel(req.body);
+        let categoryId = req.body.category;
+        // If category is a string (name), find or create the category
+        if (typeof categoryId === 'string') {
+            let category = await BrandCategoryModel.findOne({ name: categoryId });
+            if (!category) {
+                // Create new category with just the name, you may want to add more fields
+                category = new BrandCategoryModel({ name: categoryId, tagline: '', initial: '', bgColor: '' });
+                await category.save();
+            }
+            categoryId = category._id;
+        }
+        const product = new ProductModel({ ...req.body, category: categoryId });
         await product.save();
         res.status(201).json(product);
     } catch (err) {

@@ -12,6 +12,8 @@ import heroSlideRoutes from '../routes/heroSlideRoutes';
 import serviceRoutes from '../routes/serviceRoutes';
 import cartRoutes from '../routes/cartRoutes';
 
+import orderRoutes from '../routes/orderRoutes';
+
 const env = load({
     DB_PORT: Number,
     DB_USER: String,
@@ -33,6 +35,8 @@ app.use('/api/brand-categories', brandCategoryRoutes);
 app.use('/api/hero-slides', heroSlideRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/carts', cartRoutes);
+
+app.use('/api/orders', orderRoutes);
 
 
 // API index route
