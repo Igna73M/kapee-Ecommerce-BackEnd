@@ -1,4 +1,3 @@
-
 import express from "express";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
@@ -13,6 +12,8 @@ import serviceRoutes from '../routes/serviceRoutes';
 import cartRoutes from '../routes/cartRoutes';
 
 import orderRoutes from '../routes/orderRoutes';
+
+import userRoutes from '../routes/userRouter';
 
 const env = load({
     DB_PORT: Number,
@@ -37,6 +38,8 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/carts', cartRoutes);
 
 app.use('/api/orders', orderRoutes);
+
+app.use('/api/user', userRoutes);
 
 
 // API index route
