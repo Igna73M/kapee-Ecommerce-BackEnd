@@ -2,9 +2,9 @@
   "name": "e-commerce-backend",
   "version": "1.0.0",
   "description": "E-commerce-BackEnd",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "node dist/server.js",
     "build": "tsc",
     "serve": "node dist/server.ts",
     "dev": "nodemon src/server.ts",
