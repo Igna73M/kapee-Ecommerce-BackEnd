@@ -1,8 +1,8 @@
 import express from "express";
 import { load } from "ts-dotenv";
-import { connectDB } from "../config/database"
+import { connectDB } from "./config/database"
 import { Request, Response } from "express";
-import indexRouters from '../routes/indexRouters';
+import indexRouters from './routes/indexRouters';
 
 const env = load({
     DB_PORT: Number,
