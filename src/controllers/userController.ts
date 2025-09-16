@@ -3,14 +3,36 @@ import { NextFunction, Request, Response } from "express";
 import { generateAccessToken } from "../utils/tokenGeneration";
 
 import bcryptjs from "bcryptjs";
+import validator from "validator";
+
+// Helper to sanitize and validate user input
+function sanitizeUserInput({ email, username, userRole }: { email: string, username: string, userRole: string }) {
+    // Validate email
+    if (!validator.isEmail(email)) {
+        throw new Error("Invalid email format");
+    }
+    // Sanitize username
+    const cleanUsername = validator.escape(validator.trim(username));
+    // Whitelist userRole
+    const allowedRoles = ["user", "admin"];
+    if (!allowedRoles.includes(userRole)) {
+        throw new Error("Invalid user role");
+    }
+    return {
+        email: validator.normalizeEmail(email) || "",
+        username: cleanUsername,
+        userRole
+    };
+}
 
 // Register user
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, username, userRole } = req.body;
+        let { email, password, username, userRole } = req.body;
+        // Sanitize and validate input
+        ({ email, username, userRole } = sanitizeUserInput({ email, username, userRole }));
 
         const existingUser = await User.findOne({ email });
-
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -33,14 +55,20 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 
     }
     catch (error) {
-        return res.status(400).json({ message: "Error in user signin", error });
+        const errorMessage = (error instanceof Error) ? error.message : String(error);
+        return res.status(400).json({ message: "Error in user signin", error: errorMessage });
     }
 };
 
 // Login user
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+        // Validate email
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: "Invalid email format" });
+        }
+        email = validator.normalizeEmail(email) || "";
 
         const user = await User.findOne({ email });
 
@@ -68,7 +96,8 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         });
 
     } catch (error) {
-        return res.status(400).json({ message: "Error in user login", error });
+        const errorMessage = (error instanceof Error) ? error.message : String(error);
+        return res.status(400).json({ message: "Error in user login", error: errorMessage });
     }
 };
 
