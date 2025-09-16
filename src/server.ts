@@ -2,6 +2,8 @@ import express from "express";
 import { load } from "ts-dotenv";
 import { connectDB } from "./config/database"
 import { Request, Response } from "express";
+
+import cors from "cors";
 import indexRouters from './routes/indexRouters';
 
 const env = load({
@@ -15,7 +17,9 @@ const env = load({
 const port = env.DB_PORT || 7000;
 
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 
 // api_v1 routes
 app.use('/api_v1', indexRouters);
@@ -26,3 +30,7 @@ connectDB();
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+
+
+// body-parser

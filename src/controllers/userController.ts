@@ -14,6 +14,13 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
+        // Prevent multiple admins
+        if (userRole === "admin") {
+            const adminExists = await User.findOne({ userRole: "admin" });
+            if (adminExists) {
+                return res.status(403).json({ message: "Unauthorized action! Admin user already exists." });
+            }
+        }
 
         const hashedPassword = await bcryptjs.hash(password, 16);
 
@@ -51,7 +58,14 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         user.accessToken = token;
         await user.save();
 
-        return res.status(200).json({ message: "Login successful", user });
+        return res.status(200).json({
+            message: "Login successful",
+            user: {
+                username: user.username,
+                userRole: user.userRole,
+                accessToken: user.accessToken
+            }
+        });
 
     } catch (error) {
         return res.status(400).json({ message: "Error in user login", error });
@@ -75,5 +89,16 @@ export const logoutUser = async (req: Request, res: Response, next: NextFunction
 
     } catch (error) {
         return res.status(400).json({ message: "Error in user logout", error });
+    }
+};
+
+
+// get list of users
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const users = await User.find().select('-password -accessToken'); // Exclude password and accessToken from the response
+        return res.status(200).json({ users });
+    } catch (error) {
+        return res.status(400).json({ message: "Error in fetching users", error });
     }
 };

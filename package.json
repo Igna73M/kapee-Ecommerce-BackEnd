@@ -14,6 +14,7 @@
   "author": "Mugabe Ignace",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^24.3.1",
@@ -25,6 +26,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
