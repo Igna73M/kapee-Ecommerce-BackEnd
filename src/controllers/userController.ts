@@ -6,7 +6,7 @@ import bcryptjs from "bcryptjs";
 import validator from "validator";
 
 // Helper to sanitize and validate user input
-function sanitizeUserInput({ email, username, userRole }: { email: string, username: string, userRole: string }) {
+function sanitizeUserInput({ email, username, userRole, firstname, lastname }: { email: string, username: string, userRole: string, firstname: string, lastname: string }) {
     // Validate email
     if (!validator.isEmail(email)) {
         throw new Error("Invalid email format");
@@ -21,16 +21,18 @@ function sanitizeUserInput({ email, username, userRole }: { email: string, usern
     return {
         email: validator.normalizeEmail(email) || "",
         username: cleanUsername,
-        userRole
+        userRole,
+        firstname: validator.escape(validator.trim(firstname)),
+        lastname: validator.escape(validator.trim(lastname)),
     };
 }
 
 // Register user
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { email, password, username, userRole } = req.body;
+        let { email, password, username, userRole, firstname, lastname } = req.body;
         // Sanitize and validate input
-        ({ email, username, userRole } = sanitizeUserInput({ email, username, userRole }));
+        ({ email, username, userRole, firstname, lastname } = sanitizeUserInput({ email, username, userRole, firstname, lastname }));
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -46,7 +48,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 
         const hashedPassword = await bcryptjs.hash(password, 16);
 
-        const newUser = new User({ username, email, password: hashedPassword, userRole });
+        const newUser = new User({ username, email, password: hashedPassword, userRole, firstname, lastname });
 
         const token = generateAccessToken(newUser);
         newUser.accessToken = token;
@@ -91,7 +93,10 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             user: {
                 username: user.username,
                 userRole: user.userRole,
-                accessToken: user.accessToken
+                accessToken: user.accessToken,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email
             }
         });
 

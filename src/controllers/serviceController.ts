@@ -10,9 +10,9 @@ export const getServices = async (req: Request, res: Response) => {
     }
 };
 
-export const getServiceByTitle = async (req: Request, res: Response) => {
+export const getServiceById = async (req: Request, res: Response) => {
     try {
-        const service = await ServiceModel.findOne({ title: req.params.title });
+        const service = await ServiceModel.findById(req.params.id);
         if (!service) return res.status(404).json({ message: 'Service not found' });
         res.json(service);
     } catch (err) {
@@ -32,7 +32,7 @@ export const createService = async (req: Request, res: Response) => {
 
 export const updateService = async (req: Request, res: Response) => {
     try {
-        const service = await ServiceModel.findOneAndUpdate({ title: req.params.title }, req.body, { new: true });
+        const service = await ServiceModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!service) return res.status(404).json({ message: 'Service not found' });
         res.json(service);
     } catch (err) {
@@ -42,7 +42,7 @@ export const updateService = async (req: Request, res: Response) => {
 
 export const deleteService = async (req: Request, res: Response) => {
     try {
-        const service = await ServiceModel.findOneAndDelete({ title: req.params.title });
+        const service = await ServiceModel.findByIdAndDelete(req.params.id);
         if (!service) return res.status(404).json({ message: 'Service not found' });
         res.json(service);
     } catch (err) {

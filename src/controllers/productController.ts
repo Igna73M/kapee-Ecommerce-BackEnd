@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 
+import mongoose from 'mongoose';
+
 import { ProductModel } from '../models/product';
 import { BrandCategoryModel } from '../models/brandCategory';
 
@@ -24,18 +26,60 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        let categoryId = req.body.category;
-        // If category is a string (name), find or create the category
-        if (typeof categoryId === 'string') {
-            let category = await BrandCategoryModel.findOne({ name: categoryId });
-            if (!category) {
-                // Create new category with just the name, you may want to add more fields
-                category = new BrandCategoryModel({ name: categoryId, tagline: '', initial: '', bgColor: '' });
-                await category.save();
+        const {
+            quantity,
+            name,
+            description,
+            price,
+            originalPrice,
+            discount,
+            image,
+            category,
+            features,
+            rating,
+            inStock
+        } = req.body;
+
+        let categoryId = category;
+
+        // If category is a valid ObjectId, check if it exists
+        if (mongoose.Types.ObjectId.isValid(categoryId)) {
+            const categoryDoc = await BrandCategoryModel.findById(categoryId);
+            if (!categoryDoc) {
+                return res.status(400).json({ message: 'Category ID does not exist.' });
             }
-            categoryId = category._id;
+            categoryId = categoryDoc._id;
+        } else if (typeof categoryId === 'string') {
+            // If category is a string (name), find or create the category
+            let categoryDoc = await BrandCategoryModel.findOne({ name: categoryId });
+            if (!categoryDoc) {
+                categoryDoc = new BrandCategoryModel({
+                    name: categoryId,
+                    tagline: 'Default tagline',
+                    initial: categoryId[0] || 'D',
+                    bgColor: '#FFFFFF'
+                });
+                await categoryDoc.save();
+            }
+            categoryId = categoryDoc._id;
+        } else {
+            return res.status(400).json({ message: 'Invalid category value.' });
         }
-        const product = new ProductModel({ ...req.body, category: categoryId });
+
+        const product = new ProductModel({
+            quantity,
+            name,
+            description,
+            price,
+            originalPrice,
+            discount,
+            image,
+            category: categoryId,
+            features,
+            rating,
+            inStock
+        });
+
         await product.save();
         res.status(201).json(product);
     } catch (err) {

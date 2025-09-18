@@ -6,6 +6,7 @@ export interface BlogPost {
     excerpt: string;
     date: string;
     image: string;
+    body: string;
 }
 
 export interface BlogPostDocument extends Document {
@@ -13,6 +14,7 @@ export interface BlogPostDocument extends Document {
     excerpt: string;
     date: string;
     image: string;
+    body: string;
 }
 
 const BlogPostSchema = new Schema<BlogPostDocument>({
@@ -20,6 +22,7 @@ const BlogPostSchema = new Schema<BlogPostDocument>({
     excerpt: { type: String, required: true },
     date: { type: String, required: true },
     image: { type: String, required: true },
+    body: { type: String, required: true },
 }, { timestamps: true });
 
 export const BlogPostModel = model<BlogPostDocument>('BlogPost', BlogPostSchema);
