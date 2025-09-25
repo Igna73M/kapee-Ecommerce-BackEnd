@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { BannerModel } from '../models/banner';
+import cloudinary from '../utils/cloudhandle';
+import fs from 'fs';
 
 export const getBanners = async (req: Request, res: Response) => {
     try {
@@ -22,21 +24,55 @@ export const getBannerById = async (req: Request, res: Response) => {
 
 export const createBanner = async (req: Request, res: Response) => {
     try {
-        const banner = new BannerModel(req.body);
+        let imageUrl = req.body.image;
+
+        // Upload image to Cloudinary if file is present
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'banner',
+                resource_type: 'image'
+            });
+            imageUrl = result.secure_url;
+            fs.unlinkSync(req.file.path);
+        }
+
+        const { title, subtitle, discount, buttonText } = req.body;
+
+        const banner = new BannerModel({
+            title,
+            subtitle,
+            discount,
+            image: imageUrl,
+            buttonText
+        });
+
         await banner.save();
         res.status(201).json(banner);
-    } catch (err) {
-        res.status(400).json({ message: 'Error creating banner', error: err });
+    } catch (err: any) {
+        console.error('Error creating banner:', err);
+        res.status(400).json({ message: 'Error creating banner', error: err.message || err.toString() || err });
     }
 };
 
 export const updateBanner = async (req: Request, res: Response) => {
     try {
-        const banner = await BannerModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        let updateData = { ...req.body };
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'banner',
+                resource_type: 'image'
+            });
+            updateData.image = result.secure_url;
+            fs.unlinkSync(req.file.path);
+        }
+
+        const banner = await BannerModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!banner) return res.status(404).json({ message: 'Banner not found' });
         res.json(banner);
-    } catch (err) {
-        res.status(400).json({ message: 'Error updating banner', error: err });
+    } catch (err: any) {
+        console.error('Error updating banner:', err);
+        res.status(400).json({ message: 'Error updating banner', error: err.message || err.toString() || err });
     }
 };
 

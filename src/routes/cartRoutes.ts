@@ -1,20 +1,19 @@
 import express from 'express';
-import { getCartById, addToCart, updateCartItem, removeFromCart, getCarts } from '../controllers/cartController';
+import { getCartById, addToCart, updateCartItem, removeFromCart } from '../controllers/cartController';
+import { requireSignin } from '../middlewares/authentication';
 
 const router = express.Router();
 
-router.get('/', getCarts);
+// Get cart for logged-in user
+router.get('/', requireSignin, getCartById);
 
-// Get cart by MongoDB cart id (not userId)
-router.get('/:id', getCartById);
-
-// Add product to cart (or create cart if not exists)
-router.post('/add', addToCart);
+// Add product to cart
+router.post('/add', requireSignin, addToCart);
 
 // Update quantity of a product in cart
-router.patch('/update', updateCartItem);
+router.patch('/update', requireSignin, updateCartItem);
 
 // Remove product from cart
-router.delete('/remove', removeFromCart);
+router.delete('/remove', requireSignin, removeFromCart);
 
 export default router;

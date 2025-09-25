@@ -18,8 +18,7 @@ export const requireSignin = async (
             const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
             const decoded: any = jwt.verify(token, JWT_SECRET); //verify token
             const user = await User.findOne({
-                _id: decoded._id,
-                "tokens.token": token,
+                _id: decoded._id
             });
             if (!user) {
                 throw new Error("User not found");

@@ -1,13 +1,14 @@
 import express from 'express';
-import { getBrandCategories, getBrandCategoryByName, createBrandCategory, updateBrandCategory, deleteBrandCategory } from '../controllers/brandCategoryController';
+import { getBrandCategories, getBrandCategoryById, createBrandCategory, updateBrandCategory, deleteBrandCategory } from '../controllers/brandCategoryController';
+import { isAdmin, requireSignin } from '../middlewares/authentication';
 
 const router = express.Router();
 
 
 router.get('/', getBrandCategories);
-router.get('/:name', getBrandCategoryByName);
-router.post('/', createBrandCategory);
-router.patch('/:name', updateBrandCategory);
-router.delete('/:name', deleteBrandCategory);
+router.get('/:id', getBrandCategoryById);
+router.post('/', requireSignin, isAdmin, createBrandCategory);
+router.patch('/:id', requireSignin, isAdmin, updateBrandCategory);
+router.delete('/:id', requireSignin, isAdmin, deleteBrandCategory);
 
 export default router;

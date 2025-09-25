@@ -12,10 +12,10 @@ export const getBrandCategories = async (req: Request, res: Response) => {
     }
 };
 
-// Get a brand category by name
-export const getBrandCategoryByName = async (req: Request, res: Response) => {
+// Get a brand category by id
+export const getBrandCategoryById = async (req: Request, res: Response) => {
     try {
-        const category = await BrandCategoryModel.findOne({ name: req.params.name });
+        const category = await BrandCategoryModel.findById(req.params.id);
         if (!category) return res.status(404).json({ message: 'Brand category not found' });
         res.json(category);
     } catch (err) {
@@ -34,10 +34,10 @@ export const createBrandCategory = async (req: Request, res: Response) => {
     }
 };
 
-// Update a brand category by name
+// Update a brand category by id
 export const updateBrandCategory = async (req: Request, res: Response) => {
     try {
-        const category = await BrandCategoryModel.findOneAndUpdate({ name: req.params.name }, req.body, { new: true });
+        const category = await BrandCategoryModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!category) return res.status(404).json({ message: 'Brand category not found' });
         res.json(category);
     } catch (err) {
@@ -48,8 +48,8 @@ export const updateBrandCategory = async (req: Request, res: Response) => {
 // Delete a brand category only if no products reference it
 export const deleteBrandCategory = async (req: Request, res: Response) => {
     try {
-        // Find the category by name
-        const category = await BrandCategoryModel.findOne({ name: req.params.name });
+        // Find the category by id
+        const category = await BrandCategoryModel.findById(req.params.id);
         if (!category) return res.status(404).json({ message: 'Brand category not found' });
 
         // Check if any products reference this category

@@ -3,11 +3,12 @@ import OrderModel from '../models/order';
 import { ProductModel } from '../models/product';
 
 // Place a new order with stock check
-export const placeOrder = async (req: Request, res: Response) => {
+export const placeOrder = async (req: Request & { user?: any }, res: Response) => {
     try {
-        const { userId, items } = req.body;
-        if (!userId || !Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ message: 'userId and items are required' });
+        const userId = req.user._id;
+        const { items } = req.body;
+        if (!Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ message: 'items are required' });
         }
 
         let total = 0;
@@ -25,11 +26,9 @@ export const placeOrder = async (req: Request, res: Response) => {
 
         // Deduct stock and update inStock
         for (const item of items) {
-            // Decrement quantity
             await ProductModel.findByIdAndUpdate(item.product, {
                 $inc: { quantity: -item.quantity }
             });
-            // Check new quantity and update inStock
             const updatedProduct = await ProductModel.findById(item.product);
             if (updatedProduct) {
                 await ProductModel.findByIdAndUpdate(item.product, {
@@ -45,13 +44,25 @@ export const placeOrder = async (req: Request, res: Response) => {
             status: 'pending',
         });
         await order.save();
-        res.status(201).json(order);
+        const populatedOrder = await order.populate('items.product');
+        res.status(201).json(populatedOrder);
     } catch (err) {
         res.status(400).json({ message: 'Error placing order', error: err });
     }
 };
 
-// Get all orders for a user
+// Get all orders for the logged-in user
+export const getMyOrders = async (req: Request & { user?: any }, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const orders = await OrderModel.find({ userId }).populate('items.product');
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(400).json({ message: 'Error fetching orders', error: err });
+    }
+};
+
+// (Optional) Get all orders for a user by userId (admin/legacy)
 export const getUserOrders = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
