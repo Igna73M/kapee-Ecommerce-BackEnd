@@ -17,9 +17,14 @@ const env = load({
 const port = env.DB_PORT || 7000;
 
 const app = express();
-
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigin = "http://localhost:8080";
+
+app.use(cors({
+    origin: allowedOrigin,
+    credentials: true
+}));
 
 // api_v1 routes
 app.use('/api_v1', indexRouters);

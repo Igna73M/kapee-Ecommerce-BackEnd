@@ -1,22 +1,60 @@
 import { Request, Response } from 'express';
 import OrderModel from '../models/order';
 import { ProductModel } from '../models/product';
+import { CartModel } from '../models/cart';
 
-// Place a new order with stock check
+// Place a new order with stock check (from items or cartId)
 export const placeOrder = async (req: Request & { user?: any }, res: Response) => {
     try {
         const userId = req.user._id;
-        const { items } = req.body;
-        if (!Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ message: 'items are required' });
+        let items = req.body.items;
+        let total = 0;
+
+        // Support creating order from cartId
+        if (req.body.cartId) {
+            const cart = await CartModel.findById(req.body.cartId);
+            if (!cart) {
+                return res.status(404).json({ message: 'Cart not found' });
+            }
+            if (cart.userId.toString() !== userId.toString()) {
+                return res.status(403).json({ message: 'Unauthorized: cart does not belong to user' });
+            }
+
+            // Filter out invalid items (products that do not exist)
+            const validItems = [];
+            const invalidProductIds: (string | number)[] = [];
+            for (const item of cart.items) {
+                const product = await ProductModel.findById(item.product);
+                if (product) {
+                    validItems.push({
+                        product: item.product,
+                        quantity: item.quantity,
+                        price: item.price
+                    });
+                } else {
+                    invalidProductIds.push(item.product.toString());
+                }
+            }
+
+            // If there are invalid items, update the cart to remove them
+            if (invalidProductIds.length > 0) {
+                cart.items = cart.items.filter(item => !invalidProductIds.includes(item.product.toString()));
+                await cart.save();
+            }
+
+            items = validItems;
         }
 
-        let total = 0;
-        // Check stock for each item
+        if (!Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ message: 'No valid items to place order. Please update your cart.' });
+        }
+
+        // Check stock for each item and calculate total
         for (const item of items) {
             const product = await ProductModel.findById(item.product);
             if (!product) {
-                return res.status(404).json({ message: `Product not found: ${item.product}` });
+                // This should not happen now, but just in case
+                continue;
             }
             if (!product.inStock || (typeof product.quantity === 'number' && product.quantity < item.quantity)) {
                 return res.status(400).json({ message: `Not enough stock for product: ${product.name}` });

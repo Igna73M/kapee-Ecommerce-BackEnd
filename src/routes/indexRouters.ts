@@ -8,6 +8,8 @@ import serviceRoutes from './serviceRoutes';
 import cartRoutes from './cartRoutes';
 import orderRoutes from './orderRoutes';
 import userRoutes from './userRouter';
+import wishlistRoutes from './wishlistRoutes';
+import contactRoutes from './contactRoutes';
 
 const router = Router();
 
@@ -20,6 +22,8 @@ router.use('/services', serviceRoutes);
 router.use('/carts', cartRoutes);
 router.use('/orders', orderRoutes);
 router.use('/user', userRoutes);
+router.use('/wishlist', wishlistRoutes);
+router.use('/support', contactRoutes);
 
 // api_v1 index route
 router.get('/', (req: Request, res: Response) => {
