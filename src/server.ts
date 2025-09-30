@@ -1,10 +1,9 @@
 import express from "express";
 import { load } from "ts-dotenv";
 import { connectDB } from "./config/database"
-import { Request, Response } from "express";
-
 import cors from "cors";
 import indexRouters from './routes/indexRouters';
+import { swaggerUiHandler, swaggerUiSetup } from "./swagger";
 
 const env = load({
     DB_PORT: Number,
@@ -20,22 +19,20 @@ const app = express();
 app.use(express.json());
 
 const allowedOrigin = "http://localhost:8080";
-
 app.use(cors({
     origin: allowedOrigin,
     credentials: true
 }));
 
+// Swagger docs
+app.use("/api-docs", swaggerUiHandler, swaggerUiSetup);
+
 // api_v1 routes
 app.use('/api_v1', indexRouters);
-
 
 connectDB();
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
 });
-
-
-
-// body-parser

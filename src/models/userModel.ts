@@ -9,6 +9,8 @@ export interface IUser extends Document {
     confirmPassword?: string;
     accessToken: string;
     userRole?: string;
+    otp?: string;
+    otpExpiry?: number;
 }
 
 const userSchema = new Schema<IUser>({
@@ -19,7 +21,9 @@ const userSchema = new Schema<IUser>({
     password: { type: String, required: true },
     confirmPassword: { type: String, required: false },
     accessToken: { type: String },
-    userRole: { type: String, enum: ['user', 'admin'], default: 'user' }
+    userRole: { type: String, enum: ['user', 'admin'], default: 'user' },
+    otp: { type: String },
+    otpExpiry: { type: Number },
 }, { timestamps: true });
 
 export const User = model<IUser>('User', userSchema);
