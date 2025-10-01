@@ -82,7 +82,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         const isPasswordValid = await bcryptjs.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Invalid password" });
         }
 
         const token = generateAccessToken(user);
@@ -111,7 +111,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
 export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: validator.normalizeEmail(email) });
 
         if (!user) {
             return res.status(400).json({ message: "User not found" });
@@ -144,7 +144,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         if (!email) {
             return res.status(400).json({ message: "Email is required." });
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: validator.normalizeEmail(email) });
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
@@ -187,7 +187,7 @@ export const verifyOtpAndResetPassword = async (req: Request, res: Response) => 
         if (!email || !otp || !newPassword) {
             return res.status(400).json({ message: "Email, OTP, and new password are required." });
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: validator.normalizeEmail(email) });
         if (!user || !user.otp || !user.otpExpiry) {
             return res.status(400).json({ message: "OTP not requested or expired." });
         }

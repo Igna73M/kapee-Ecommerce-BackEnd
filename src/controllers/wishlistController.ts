@@ -7,7 +7,7 @@ export const getMyWishlist = async (req: Request & { user?: any }, res: Response
         const userId = req.user._id;
         const wishlist = await WishlistModel.findOne({ userId }).populate("items.product");
         if (!wishlist) {
-            return res.status(404).json({ message: "Wishlist not found" });
+            return res.status(200).json([]); // Return empty array if no wishlist found
         }
         res.status(200).json(wishlist);
     } catch (err) {
