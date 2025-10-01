@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "NODE_OPTIONS='--max_old_space_size=10240' tsc",
     "serve": "node dist/server.js",
     "dev": "nodemon src/server.ts",
     "postinstall": "npm install --include=dev"
