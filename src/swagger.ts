@@ -8,9 +8,16 @@ const options = {
             title: "Kapee Ecommerce API",
             version: "1.0.0",
             description: "API documentation for Kapee Ecommerce Backend",
+            contact: {
+                name: "Mugabe Nshuti Ignace",
+                email: "i08690199@gmail.com"
+            }
         },
         servers: [
-            { url: "http://localhost:5000/api_v1" }
+            {
+                url: "http://localhost:5000/api_v1",
+                description: "Development server"
+            },
         ],
         components: {
             securitySchemes: {
@@ -25,11 +32,11 @@ const options = {
     },
     apis: [
         "./src/routes/*.ts",
-        "./src/controllers/*.ts",
-        "./src/models/*.ts"
     ],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
+
+
 export const swaggerUiHandler = swaggerUi.serve;
 export const swaggerUiSetup = swaggerUi.setup(swaggerSpec);
