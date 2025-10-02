@@ -20,7 +20,10 @@ app.use(express.json());
 
 
 const corsOptions = {
-    origin: ["http://localhost:8080", "https://kapee-ecommerce-backend.onrender.com/"],
+    origin: [
+        "http://localhost:8080",
+        "https://kapee-ecommerce.vercel.app"
+    ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow cookies to be sent
