@@ -18,11 +18,16 @@ const port = env.DB_PORT || 7000;
 const app = express();
 app.use(express.json());
 
-const allowedOrigin = "http://localhost:8080";
-app.use(cors({
-    origin: allowedOrigin,
-    credentials: true
-}));
+
+const corsOptions = {
+    origin: ["http://localhost:8080", "https://kapee-ecommerce-backend.onrender.com/"],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow cookies to be sent
+};
+app.use(cors(corsOptions));
+
+
 
 // Swagger docs
 app.use("/api-docs", swaggerUiHandler, swaggerUiSetup);
