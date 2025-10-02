@@ -21,15 +21,16 @@ app.use(express.json());
 
 const corsOptions = {
     origin: [
-        "http://localhost:8080",
-        "https://kapee-ecommerce.vercel.app"
+        "http://localhost:8080",              // local dev frontend
+        "https://kapee-ecommerce.vercel.app", // deployed frontend
+        "https://kapee-ecommerce-backend.onrender.com", // backend itself (Swagger, tests)
     ],
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies to be sent
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
 };
-app.use(cors(corsOptions));
 
+app.use(cors(corsOptions));
 
 
 // Swagger docs
