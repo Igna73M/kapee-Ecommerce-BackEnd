@@ -23,6 +23,10 @@ const options = {
                 url: "http://localhost:5000/api_v1",
                 description: "Development server"
             },
+            {
+                url: "https://kapee-ecommerce-backend.onrender.com/api_v1",
+                description: "Production server"
+            }
         ],
         components: {
             securitySchemes: {
