@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    // "module": "nodenext",
-    // "moduleResolution": "nodenext",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
