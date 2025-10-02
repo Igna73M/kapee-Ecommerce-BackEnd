@@ -20,10 +20,14 @@ const port = env.DB_PORT || 7000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const corsOptions = {
-    origin: ["http://localhost:8080", "https://kapee-ecommerce-backend.onrender.com/"],
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies to be sent
+    origin: [
+        "http://localhost:8080", // local dev frontend
+        "https://kapee-ecommerce.vercel.app", // deployed frontend
+        "https://kapee-ecommerce-backend.onrender.com", // backend itself (Swagger, tests)
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));
 // Swagger docs
